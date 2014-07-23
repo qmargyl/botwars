@@ -2,20 +2,39 @@
 *.slo
 *.lo
 *.o
-*.obj
 
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
 
 # Compiled Static libraries
 *.lai
 *.la
 *.a
-*.lib
 
-# Executables
-*.exe
-*.out
-*.app
+# Object code
+*.obj
+
+# Executables and binaries
+#*.dll
+#*.exe
+
+# VS files
+*.manifest
+*.dep
+*.sln
+*.suo
+Buildlog.htm
+*.idb
+*.pdb
+*.user
+*.ncb
+*.manifest.res
+
+build/win/VC/Project2/Debug/*.*
+
+*.cd
+
+# All log files..
+*.log
+*.html
