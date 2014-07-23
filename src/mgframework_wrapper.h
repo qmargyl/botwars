@@ -1,11 +1,9 @@
-#ifndef _AITRIBE_H
-#define _AITRIBE_H
+#ifndef _MGFRAMEWORK_WRAPPER_H
+#define _MGFRAMEWORK_WRAPPER_H
 
 #include "mgframework/mgframework.h"
 
-#define AITRIBEVERSION "0.0.0.8"
-
-class AITribe : public MGFramework
+class MGFWrapper : public MGFramework
 {
 	private:
 
@@ -22,10 +20,8 @@ class AITribe : public MGFramework
 		SDL_Surface *m_Mark;
 
 	public:
-		AITribe();
+		MGFWrapper();
 		virtual bool init(int w, int h, int tw, int th); // Has to be implemented in a class derived from MGFramework
-
-		virtual const char* getAITribeVersion(){ return AITRIBEVERSION; }
 };
 
 #endif

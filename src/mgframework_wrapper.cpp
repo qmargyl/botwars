@@ -4,7 +4,7 @@
 #include "mgframework/mgframework.h"
 #include "mgframework/mgmovingobject.h"
 
-AITribe::AITribe()
+MGFWrapper::MGFWrapper()
 {
 	unsetWindowProperties(); // Force setWindowProperties to be called before init.
 	disableTyping();
@@ -12,7 +12,7 @@ AITribe::AITribe()
 	disableLogging();
 }
 
-bool AITribe::init(int w, int h, int tw, int th)
+bool MGFWrapper::init(int w, int h, int tw, int th)
 {
 	// The window is created.
 	if (windowPropertiesSet())
@@ -92,7 +92,7 @@ bool AITribe::init(int w, int h, int tw, int th)
 	}
 }
 
-void AITribe::handleGameLogics()
+void MGFWrapper::handleGameLogics()
 {
 	// Application specific game logics are updated here..
 	if(getNumberOfMO()>0)
@@ -102,7 +102,7 @@ void AITribe::handleGameLogics()
 	}
 }
 
-void AITribe::draw()
+void MGFWrapper::draw()
 {
 	bool noRenderingNeeded = isSelectiveTileRenderingActive() && !MGMovingObject::anyMovingMO() && !isFramingOngoing() && !renderAllTiles();
 

@@ -5,7 +5,7 @@ using std::string;
 
 int main(int argc, char **argv)
 {
-	AITribe* ait = 0;
+	MGFWrapper* mgfw = 0;
 
 	bool loggingOn = false;
 	bool scriptFile = false;
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 			}
 			else if(strcmp(argv[i], "-script")==0)
 			{
-				if(i+1 == argc)
+				if(i + 1 == argc)
 				{
 					//No parameter after -script
 					goto EXIT_MAIN_RIGHT_AWAY;
@@ -48,27 +48,25 @@ int main(int argc, char **argv)
 	// Create and initialize the framework...
 
 
-	ait = new AITribe();
-	ait->setWindowProperties(MGWindow_RES_1600_900, 32, false, 
-							 string("AI Tribe ") + 
-							 string(ait->getAITribeVersion())+ 
-							 string(" based on MGF ") + 
-							 string(ait->getMGFrameworkVersion()));
+	mgfw = new MGFWrapper();
+	mgfw->setWindowProperties(MGWindow_RES_1600_900, 32, false, 
+							  string("BotWars v0.1 based on MGF ") + 
+							  string(mgfw->getMGFrameworkVersion()));
 
-	if(loggingOn) ait->enableLogging();
+	if(loggingOn) mgfw->enableLogging();
 
-	if(ait->windowPropertiesSet())
+	if(mgfw->windowPropertiesSet())
 	{
 		// If initialization is ok, run the framework...
-		if(ait->init(128, 128, 32, 32))
+		if(mgfw->init(128, 128, 32, 32))
 		{
 			if(scriptFile)
 			{
-				ait->run(scriptFileName);
+				mgfw->run(scriptFileName);
 			}
 			else
 			{
-				ait->run(NULL);
+				mgfw->run(NULL);
 			}
 		}
 		else
@@ -83,9 +81,9 @@ int main(int argc, char **argv)
 
 EXIT_MAIN_RIGHT_AWAY:
 
-	if(ait)
+	if(mgfw)
 	{
-		delete ait;
+		delete mgfw;
 	}
 	else
 	{
