@@ -22,6 +22,13 @@ class MGFWrapper : public MGFramework
 	public:
 		MGFWrapper();
 		virtual bool init(int w, int h, int tw, int th); // Has to be implemented in a class derived from MGFramework
+		
+		
+		// Public API to be used by Robot class
+		int getWorldXMin();
+		int getWorldXMax();
+		int getWorldYMin();
+		int getWorldYMax();
 };
 
 #endif

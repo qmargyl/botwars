@@ -86,7 +86,12 @@ bool MGFWrapper::init(int w, int h, int tw, int th)
 
 void MGFWrapper::handleGameLogics()
 {
-
+	// Application specific game logics are updated here..
+	if(getNumberOfMO() > 0)
+	{
+		m_Map.setScrollOffset(	m_Window.getWidth() / 2 - m_MO[0].getTileX() * m_Map.getTileWidth() - m_MO[0].getXOffset(),
+								m_Window.getHeight() / 2 - m_MO[0].getTileY() * m_Map.getTileHeight() - m_MO[0].getYOffset() );
+	}
 }
 
 void MGFWrapper::draw()
