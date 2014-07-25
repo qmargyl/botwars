@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 
 
 	mgfw = new MGFWrapper();
-	mgfw->setWindowProperties(MGWindow_RES_1600_900, 32, false, 
+	mgfw->setWindowProperties(MGWindow_RES_1024_768, 32, false, 
 							  string("BotWars v0.1 based on MGF ") + 
 							  string(mgfw->getMGFrameworkVersion()));
 
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 	if(mgfw->windowPropertiesSet())
 	{
 		// If initialization is ok, run the framework...
-		if(mgfw->init(128, 128, 32, 32))
+		if(mgfw->init(64, 48, 16, 16))
 		{
 			if(scriptFile)
 			{

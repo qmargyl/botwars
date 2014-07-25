@@ -55,34 +55,26 @@ bool MGFWrapper::init(int w, int h, int tw, int th)
 		m_Map.init(w, h, tw, th, m_Window.getWidth(), m_Window.getHeight()); // width (in number of tiles), height, tile width (in pixels), tile height, resolution x and y.
 
 		// Setup the edge around the screen to allow scrolling to see the entire map.
-		m_Map.setTopEdge(8);
-		m_Map.setBottomEdge(64);
-		m_Map.setLeftEdge(8);
-		m_Map.setRightEdge(256);
+		m_Map.setTopEdge(0);
+		m_Map.setBottomEdge(0);
+		m_Map.setLeftEdge(0);
+		m_Map.setRightEdge(0);
 
 		// Setup application specific game logics..
 		disableFeatureSelectiveTileRendering();
-		setClientPlayer(MGF_PLAYER1);			// Decides what index MO:s will be possible to select
-		enableFeatureOnlySelectOwnedMO();		// User can only select his own MO (with mouse click)
-		disableFeatureMouseScrolling();
-		enableFeatureCenterOnMO(0);				// A non-selectable MO
+		disableFeatureOnlySelectOwnedMO();
+		enableFeatureMouseScrolling();
+		disableFeatureCenterOnMO();
 
 		runConsoleCommand("setfps 60", this, NULL);			// Set initial FPS to 60 to avoid slow start
 		runConsoleCommand("logging off", this, NULL);		// Turn on logging for the MGFramework class
 		runConsoleCommand("map logging off", this, NULL);	// Turn on logging for the MGMap class
-		runConsoleCommand("minimap on", this, NULL);
+		runConsoleCommand("minimap off", this, NULL);
 		
-		runConsoleCommand("add mo 1 -owner 0 -x 10 -y 10", this, NULL);
 		runConsoleCommand("add mo 20 -owner 1 -area_square 5 5 20 20", this, NULL);
-		runConsoleCommand("add mo 20 -owner 2", this, NULL);
-		runConsoleCommand("add mo 20 -owner 3", this, NULL);
-		runConsoleCommand("add mo 20 -owner 4", this, NULL);
-		runConsoleCommand("add mo 20 -owner 5", this, NULL);
-		runConsoleCommand("add mo 20 -owner 6", this, NULL);
-		runConsoleCommand("add mo 20 -owner 7", this, NULL);
-		runConsoleCommand("add mo 20 -owner 8", this, NULL);
+		runConsoleCommand("add mo 20 -owner 2 -area_square 30 30 45 45", this, NULL);
 
-		runConsoleCommand("add so 2000", this, NULL);
+		runConsoleCommand("add so 50", this, NULL);
 
 		return true;
 	}
@@ -95,11 +87,11 @@ bool MGFWrapper::init(int w, int h, int tw, int th)
 void MGFWrapper::handleGameLogics()
 {
 	// Application specific game logics are updated here..
-	if(getNumberOfMO()>0)
-	{
-		m_Map.setScrollOffset(	m_Window.getWidth()/2 - m_MO[0].getTileX() * m_Map.getTileWidth() - m_MO[0].getXOffset(),
-								m_Window.getHeight()/2 - m_MO[0].getTileY() * m_Map.getTileHeight() - m_MO[0].getYOffset() );
-	}
+//	if(getNumberOfMO()>0)
+//	{
+//		m_Map.setScrollOffset(	m_Window.getWidth()/2 - m_MO[0].getTileX() * m_Map.getTileWidth() - m_MO[0].getXOffset(),
+//								m_Window.getHeight()/2 - m_MO[0].getTileY() * m_Map.getTileHeight() - m_MO[0].getYOffset() );
+//	}
 }
 
 void MGFWrapper::draw()
@@ -178,50 +170,6 @@ void MGFWrapper::draw()
 				{
 					m_Window.drawSprite(m_StationaryObject, 0, 0, sX, sY, m_Map.getTileWidth(), m_Map.getTileHeight()+16);
 				}
-			}
-		}
-
-		// Draw a frame around the edge of the map
-		m_Window.vLine32(m_Map.getLeftEdge(), m_Map.getTopEdge(), m_Map.getWindowHeight()-m_Map.getBottomEdge()-m_Map.getTopEdge(), 0x000000FF);
-		m_Window.vLine32(m_Map.getWindowWidth()-m_Map.getRightEdge(), m_Map.getTopEdge(), m_Map.getWindowHeight()-m_Map.getBottomEdge()-m_Map.getTopEdge(), 0x000000FF);
-		m_Window.hLine32(m_Map.getLeftEdge(), m_Map.getTopEdge(), m_Map.getWindowWidth()-m_Map.getLeftEdge()-m_Map.getRightEdge(), 0x000000FF);
-		m_Window.hLine32(m_Map.getLeftEdge(), m_Map.getWindowHeight()-m_Map.getBottomEdge(), m_Map.getWindowWidth()-m_Map.getLeftEdge()-m_Map.getRightEdge(), 0x000000FF);
-
-
-		// Draw the mini map if enabled. Also draw all objects on it...
-		if(featureMiniMapEnabled())
-		{
-			for (int x=0; x < m_Map.getWidth(); x++)
-			{
-				for ( int y=0; y < m_Map.getHeight(); y++)
-				{
-					// Only draw the tiles actually visible in the window...
-					if(  ((x * m_Map.getTileWidth() + m_Map.getScrollX()) <= m_Window.getWidth()) &&
-						 ((x * m_Map.getTileWidth() + m_Map.getScrollX()) >= 0) &&
-						 ((y * m_Map.getTileHeight() + m_Map.getScrollY()) <= m_Window.getHeight()) &&
-						 ((y * m_Map.getTileHeight() + m_Map.getScrollY()) >= 0)  )
-					{
-						// Different color for different tile property of each tile...
-						if(m_Map.getTileProperty(x, y)  & MGMAP_TP_PROPERTY_1)
-						{
-							m_Window.putPixel32(x + m_Window.getWidth() - m_Map.getWidth() - 16, y + 16, 0x3F3F3F3F);
-						}
-						else if(m_Map.getTileProperty(x, y)  & MGMAP_TP_PROPERTY_2)
-						{
-							m_Window.putPixel32(x + m_Window.getWidth() - m_Map.getWidth() - 16, y + 16, 0xFFFFFFFF);
-						}
-					}
-					else
-					{
-						// Draw it black..
-						m_Window.putPixel32(x + m_Window.getWidth() - m_Map.getWidth() - 16, y + 16, 0x00000000);
-					}
-				}
-			}
-			// Draw all moving objects on the mini map..
-			for(int i=0;i<getNumberOfMO();i++)
-			{
-				m_Window.putPixel32(m_MO[i].getTileX() + m_Window.getWidth() - m_Map.getWidth() - 16, m_MO[i].getTileY() + 16, 0x00FF0000);
 			}
 		}
 	}
