@@ -207,6 +207,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\..\..\mgframework\src\mgframework\mgpathgenerator.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\mgframework\src\mgframework\mgpathitem.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\..\..\mgframework\src\mgframework\mgperiodicevent.cpp"
 					>
 				</File>
@@ -250,6 +258,14 @@
 				</File>
 				<File
 					RelativePath="..\..\..\..\..\mgframework\src\mgframework\mgmovingobject.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\mgframework\src\mgframework\mgpathgenerator.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\mgframework\src\mgframework\mgpathitem.h"
 					>
 				</File>
 				<File

@@ -17,26 +17,26 @@ bool MGFWrapper::init(int w, int h, int tw, int th)
 	// The window is created.
 	if (windowPropertiesSet())
 	{
-		if (!m_Window.createWindow()) 
+		if (!getWindow()->createWindow())
 		{
 			return false;
 		}
 
 		// All graphics should be loaded here.
-		m_Floor = m_Window.loadBMPImage("tileset.bmp");
+		m_Floor = static_cast<SDL_Surface*>(getWindow()->loadBMPImage("tileset.bmp"));
 
-		m_MOSprite[0] = m_Window.loadBMPImage("movingobject_00.bmp");
-		m_MOSprite[1] = m_Window.loadBMPImage("movingobject_01.bmp");
-		m_MOSprite[2] = m_Window.loadBMPImage("movingobject_02.bmp");
-		m_MOSprite[3] = m_Window.loadBMPImage("movingobject_03.bmp");
-		m_MOSprite[4] = m_Window.loadBMPImage("movingobject_04.bmp");
-		m_MOSprite[5] = m_Window.loadBMPImage("movingobject_05.bmp");
-		m_MOSprite[6] = m_Window.loadBMPImage("movingobject_06.bmp");
-		m_MOSprite[7] = m_Window.loadBMPImage("movingobject_07.bmp");
-		m_MOSprite[8] = m_Window.loadBMPImage("movingobject_08.bmp");
+		m_MOSprite[0] = static_cast<SDL_Surface*>(getWindow()->loadBMPImage("movingobject_00.bmp"));
+		m_MOSprite[1] = static_cast<SDL_Surface*>(getWindow()->loadBMPImage("movingobject_01.bmp"));
+		m_MOSprite[2] = static_cast<SDL_Surface*>(getWindow()->loadBMPImage("movingobject_02.bmp"));
+		m_MOSprite[3] = static_cast<SDL_Surface*>(getWindow()->loadBMPImage("movingobject_03.bmp"));
+		m_MOSprite[4] = static_cast<SDL_Surface*>(getWindow()->loadBMPImage("movingobject_04.bmp"));
+		m_MOSprite[5] = static_cast<SDL_Surface*>(getWindow()->loadBMPImage("movingobject_05.bmp"));
+		m_MOSprite[6] = static_cast<SDL_Surface*>(getWindow()->loadBMPImage("movingobject_06.bmp"));
+		m_MOSprite[7] = static_cast<SDL_Surface*>(getWindow()->loadBMPImage("movingobject_07.bmp"));
+		m_MOSprite[8] = static_cast<SDL_Surface*>(getWindow()->loadBMPImage("movingobject_08.bmp"));
 
-		m_StationaryObject = m_Window.loadBMPImage("stationaryobject.bmp");
-		m_Mark = m_Window.loadBMPImage("mark.bmp");
+		m_StationaryObject = static_cast<SDL_Surface*>(getWindow()->loadBMPImage("stationaryobject.bmp"));
+		m_Mark = static_cast<SDL_Surface*>(getWindow()->loadBMPImage("mark.bmp"));
 
 		SDL_SetColorKey(m_MOSprite[0], SDL_SRCCOLORKEY, 0);
 		SDL_SetColorKey(m_MOSprite[1], SDL_SRCCOLORKEY, 0);
@@ -52,7 +52,7 @@ bool MGFWrapper::init(int w, int h, int tw, int th)
 		SDL_SetColorKey(m_Mark, SDL_SRCCOLORKEY, 0);
 
 		// Objcts such as the map are initialized here.
-		m_Map.init(w, h, tw, th, m_Window.getWidth(), m_Window.getHeight()); // width (in number of tiles), height, tile width (in pixels), tile height, resolution x and y.
+		m_Map.init(w, h, tw, th, getWindow()->getWidth(), getWindow()->getHeight()); // width (in number of tiles), height, tile width (in pixels), tile height, resolution x and y.
 
 		// Setup the edge around the screen to allow scrolling to see the entire map.
 		m_Map.setTopEdge(0);
@@ -86,12 +86,7 @@ bool MGFWrapper::init(int w, int h, int tw, int th)
 
 void MGFWrapper::handleGameLogics()
 {
-	// Application specific game logics are updated here..
-//	if(getNumberOfMO()>0)
-//	{
-//		m_Map.setScrollOffset(	m_Window.getWidth()/2 - m_MO[0].getTileX() * m_Map.getTileWidth() - m_MO[0].getXOffset(),
-//								m_Window.getHeight()/2 - m_MO[0].getTileY() * m_Map.getTileHeight() - m_MO[0].getYOffset() );
-//	}
+
 }
 
 void MGFWrapper::draw()
@@ -106,15 +101,15 @@ void MGFWrapper::draw()
 			for ( int y=0; y < m_Map.getHeight(); y++)
 			{
 				// Only draw the tiles actually visible (+1 to draw partly visible tiles) in the window...
-				if(  ((x * m_Map.getTileWidth() + m_Map.getScrollX()) <= m_Window.getWidth() + m_Map.getTileWidth() - m_Map.getRightEdge()) &&
+				if(  ((x * m_Map.getTileWidth() + m_Map.getScrollX()) <= getWindow()->getWidth() + m_Map.getTileWidth() - m_Map.getRightEdge()) &&
 					 ((x * m_Map.getTileWidth() + m_Map.getScrollX()) >= 0 - m_Map.getTileWidth()) &&
-					 ((y * m_Map.getTileHeight() + m_Map.getScrollY()) <= m_Window.getHeight() + m_Map.getTileHeight() - m_Map.getBottomEdge()) &&
+					 ((y * m_Map.getTileHeight() + m_Map.getScrollY()) <= getWindow()->getHeight() + m_Map.getTileHeight() - m_Map.getBottomEdge()) &&
 					 ((y * m_Map.getTileHeight() + m_Map.getScrollY()) >= 0 - m_Map.getTileHeight()) &&
 					 (!isSelectiveTileRenderingActive() || renderAllTiles() || m_Map.isMarkedForRendering(x, y)) )
 				{
 					if(m_Map.getTileProperty(x, y) & MGMAP_TP_PROPERTY_1)
 					{
-						m_Window.drawSprite(m_Floor, 0, 0, x * m_Map.getTileWidth() + m_Map.getScrollX(), y * m_Map.getTileHeight() + m_Map.getScrollY(), m_Map.getTileWidth(), m_Map.getTileHeight());
+						getWindow()->drawSprite(m_Floor, 0, 0, x * m_Map.getTileWidth() + m_Map.getScrollX(), y * m_Map.getTileHeight() + m_Map.getScrollY(), m_Map.getTileWidth(), m_Map.getTileHeight());
 					}
 					m_Map.unmarkForRendering(x, y);
 				}
@@ -123,52 +118,46 @@ void MGFWrapper::draw()
 
 		// Draw all moving objects...
 		int oX,oY;
-		for(int i=0;i<getNumberOfMO();i++)
+		for(std::list<MGMovingObject>::iterator it = m_MO.begin(); it != m_MO.end(); it++)
 		{
-			if(m_MO != NULL)
+			oX = (*it).getTileX() * m_Map.getTileWidth() + m_Map.getScrollX() + (*it).getXOffset();
+			oY = (*it).getTileY() * m_Map.getTileHeight() + m_Map.getScrollY() + (*it).getYOffset();
+			// Only draw visible moving objects...
+			if(detectCollisionRectangle(oX, oY, oX + m_Map.getTileWidth(), oY + m_Map.getTileHeight(), 0, 0, getWindow()->getWidth(), getWindow()->getHeight()))
 			{
-				oX=m_MO[i].getTileX() * m_Map.getTileWidth() + m_Map.getScrollX() + m_MO[i].getXOffset();
-				oY=m_MO[i].getTileY() * m_Map.getTileHeight() + m_Map.getScrollY() + m_MO[i].getYOffset();
-				// Only draw visible moving objects...
-				if(detectCollisionRectangle(oX, oY, oX + m_Map.getTileWidth(), oY + m_Map.getTileHeight(), 0, 0, m_Window.getWidth() - m_Map.getRightEdge(), m_Window.getHeight() - m_Map.getBottomEdge()))
+				drawTile(m_MOSprite[it->getOwner()], 0, 0, oX, oY);
+				if(isSelectiveTileRenderingActive())
 				{
-					if(m_MO[i].getOwner() >= 0 && m_MO[i].getOwner() < 9)
-					{
-						m_Window.drawSprite(m_MOSprite[m_MO[i].getOwner()], 0, 0, oX, oY, m_Map.getTileWidth(), m_Map.getTileHeight());
-					}
-					if(isSelectiveTileRenderingActive())
-					{
-						m_Map.markForRendering(m_MO[i].getTileX(), m_MO[i].getTileY());
-						m_Map.markForRendering(m_MO[i].getTileX()+1, m_MO[i].getTileY()+1);
-						m_Map.markForRendering(m_MO[i].getTileX()-1, m_MO[i].getTileY()-1);
-						m_Map.markForRendering(m_MO[i].getTileX()+1, m_MO[i].getTileY()-1);
-						m_Map.markForRendering(m_MO[i].getTileX()-1, m_MO[i].getTileY()+1);
-						m_Map.markForRendering(m_MO[i].getTileX()+1, m_MO[i].getTileY());
-						m_Map.markForRendering(m_MO[i].getTileX()-1, m_MO[i].getTileY());
-						m_Map.markForRendering(m_MO[i].getTileX(), m_MO[i].getTileY()+1);
-						m_Map.markForRendering(m_MO[i].getTileX(), m_MO[i].getTileY()-1);
-					}
+					m_Map.markForRendering((*it).getTileX(), (*it).getTileY());
+					m_Map.markForRendering((*it).getTileX() + 1, (*it).getTileY() + 1);
+					m_Map.markForRendering((*it).getTileX() - 1, (*it).getTileY() - 1);
+					m_Map.markForRendering((*it).getTileX() + 1, (*it).getTileY() - 1);
+					m_Map.markForRendering((*it).getTileX() - 1, (*it).getTileY() + 1);
+					m_Map.markForRendering((*it).getTileX() + 1, (*it).getTileY());
+					m_Map.markForRendering((*it).getTileX() - 1, (*it).getTileY());
+					m_Map.markForRendering((*it).getTileX(), (*it).getTileY() + 1);
+					m_Map.markForRendering((*it).getTileX(), (*it).getTileY() - 1);
+				}
 
-					if(m_MO[i].isMarked())
-					{
-						m_Window.drawSprite(m_Mark, 0, 0, oX, oY, m_Map.getTileWidth(), m_Map.getTileHeight());
-					}
+				if((*it).isMarked())
+				{
+					drawTile(m_Mark, 0, 0, oX, oY);
 				}
 			}
 		}
 
 		// Draw all stationary objects...
 		int sX, sY;
-		for(int i=0;i<getNumberOfSO();i++)
+		for(int i = 0; i < getNumberOfSO(); i++)
 		{
 			if(m_SO != NULL)
 			{
 				sX=m_SO[i].getTileX() * m_Map.getTileWidth() + m_Map.getScrollX();
 				sY=m_SO[i].getTileY() * m_Map.getTileHeight() + m_Map.getScrollY()-16;
 				// Only draw visible stationary objects...
-				if(detectCollisionRectangle(sX, sY, sX+m_Map.getTileWidth(), sY+m_Map.getTileHeight(), 0, 0, m_Window.getWidth() - m_Map.getRightEdge(), m_Window.getHeight() - m_Map.getBottomEdge()))
+				if(detectCollisionRectangle(sX, sY, sX+m_Map.getTileWidth(), sY+m_Map.getTileHeight(), 0, 0, getWindow()->getWidth() - m_Map.getRightEdge(), getWindow()->getHeight() - m_Map.getBottomEdge()))
 				{
-					m_Window.drawSprite(m_StationaryObject, 0, 0, sX, sY, m_Map.getTileWidth(), m_Map.getTileHeight()+16);
+					getWindow()->drawSprite(m_StationaryObject, 0, 0, sX, sY, m_Map.getTileWidth(), m_Map.getTileHeight()+16);
 				}
 			}
 		}
@@ -176,15 +165,21 @@ void MGFWrapper::draw()
 
 	// Example of how text can be printed on the surface.. Here FPS and time left between frames.
 #ifndef MGF_DEBUGGING_ENABLED
-	m_Window.drawText((string("MOs: ") + MGFramework::toString((int)getNumberOfMO()) + 
-			 string("(") + MGFramework::toString((int)MGMovingObject::nMovingMO()) + string(")") + string("          ")).c_str(), 
-			 16, m_Window.getWidth() - m_Map.getWidth() - 16, m_Map.getHeight() + 30, 0, 0, 0, 0, 255, 0);
-	m_Window.drawText((string("FD : ") + MGFramework::toString((int)getLastFrameDelayTime()) + string("          ")).c_str(), 
-			 16, m_Window.getWidth() - m_Map.getWidth() - 16, m_Map.getHeight() + 50, 0, 0, 0, 0, 255, 0);
-	m_Window.drawText((string("FPS: ") + MGFramework::toString((int)getFPS()) + string("          ")).c_str(), 
-			 16, m_Window.getWidth() - m_Map.getWidth() - 16, m_Map.getHeight() + 70, 0, 0, 0, 0, 255, 0);
-	m_Window.drawText((string("DT: ") + MGFramework::toString(getDrawnTilesCounter()) + string("          ")).c_str(), 
-			 16, m_Window.getWidth() - m_Map.getWidth() - 16, m_Map.getHeight() + 90, 0, 0, 0, 0, 255, 0);
+	getWindow()->drawText(
+		(std::string("MOs: ") + MGFramework::toString((int)getNumberOfMO()) + 
+			std::string("(") + MGFramework::toString((int)MGMovingObject::nMovingMO()) + 
+			std::string(")") + std::string("          ")).c_str(),
+		16, getWindow()->getWidth() - m_Map.getWidth() - 16, m_Map.getHeight() + 30, 0, 0, 0, 0, 255, 0);
+	getWindow()->drawText(
+		(std::string("FD : ") + MGFramework::toString((int)getLastFrameDelayTime()) +
+			std::string("          ")).c_str(),
+		16, getWindow()->getWidth() - m_Map.getWidth() - 16, m_Map.getHeight() + 50, 0, 0, 0, 0, 255, 0);
+	getWindow()->drawText(
+		(std::string("FPS: ") + MGFramework::toString((int)getFPS()) + std::string("          ")).c_str(), 
+		16, getWindow()->getWidth() - m_Map.getWidth() - 16, m_Map.getHeight() + 70, 0, 0, 0, 0, 255, 0);
+	getWindow()->drawText(
+		(std::string("DT: ") + MGFramework::toString(getDrawnTilesCounter()) + std::string("          ")).c_str(), 
+		16, getWindow()->getWidth() - m_Map.getWidth() - 16, m_Map.getHeight() + 90, 0, 0, 0, 0, 255, 0);
 #endif
 
 
@@ -197,10 +192,10 @@ void MGFWrapper::draw()
 			int uLY=std::min(getFrameStartY(), getFrameEndY());
 			int xL=abs(getFrameStartX() - getFrameEndX());
 			int yL=abs(getFrameStartY() - getFrameEndY());
-			m_Window.hLine32(uLX, uLY, xL, 0x00FF0000);
-			m_Window.hLine32(uLX, uLY+yL, xL, 0x00FF0000);
-			m_Window.vLine32(uLX, uLY, yL, 0x00FF0000);
-			m_Window.vLine32(uLX+xL, uLY, yL, 0x00FF0000);
+			getWindow()->hLine32(uLX, uLY, xL, 0x00FF0000);
+			getWindow()->hLine32(uLX, uLY+yL, xL, 0x00FF0000);
+			getWindow()->vLine32(uLX, uLY, yL, 0x00FF0000);
+			getWindow()->vLine32(uLX+xL, uLY, yL, 0x00FF0000);
 		}
 	}
 
