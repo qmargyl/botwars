@@ -6,6 +6,7 @@ using std::string;
 int main(int argc, char **argv)
 {
 	MGFWrapper* mgfw = 0;
+	MGWindow window;
 
 	bool loggingOn = false;
 	bool scriptFile = false;
@@ -51,7 +52,8 @@ int main(int argc, char **argv)
 	mgfw = new MGFWrapper();
 	mgfw->setWindowProperties(MGWindow_RES_1024_768, 32, false, 
 							  string("BotWars v0.1 based on MGF ") + 
-							  string(mgfw->getMGFrameworkVersion()));
+							  string(mgfw->getMGFrameworkVersion()),
+							  &window);
 
 	if(loggingOn) mgfw->enableLogging();
 
