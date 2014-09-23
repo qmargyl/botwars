@@ -87,11 +87,6 @@ bool MGFWrapper::init(int w, int h, int tw, int th)
 void MGFWrapper::handleGameLogics()
 {
 	// Application specific game logics are updated here..
-	if(getNumberOfMO() > 0)
-	{
-		m_Map.setScrollOffset(	m_Window.getWidth() / 2 - m_MO[0].getTileX() * m_Map.getTileWidth() - m_MO[0].getXOffset(),
-								m_Window.getHeight() / 2 - m_MO[0].getTileY() * m_Map.getTileHeight() - m_MO[0].getYOffset() );
-	}
 }
 
 void MGFWrapper::draw()
@@ -101,9 +96,9 @@ void MGFWrapper::draw()
 	if(!noRenderingNeeded)
 	{
 		// Draw all tiles visible in the window...
-		for (int x=0; x < m_Map.getWidth(); x++)
+		for (int x = 0; x < m_Map.getWidth(); x++)
 		{
-			for ( int y=0; y < m_Map.getHeight(); y++)
+			for ( int y = 0; y < m_Map.getHeight(); y++)
 			{
 				// Only draw the tiles actually visible (+1 to draw partly visible tiles) in the window...
 				if(  ((x * m_Map.getTileWidth() + m_Map.getScrollX()) <= getWindow()->getWidth() + m_Map.getTileWidth() - m_Map.getRightEdge()) &&
@@ -157,12 +152,12 @@ void MGFWrapper::draw()
 		{
 			if(m_SO != NULL)
 			{
-				sX=m_SO[i].getTileX() * m_Map.getTileWidth() + m_Map.getScrollX();
-				sY=m_SO[i].getTileY() * m_Map.getTileHeight() + m_Map.getScrollY()-16;
+				sX = m_SO[i].getTileX() * m_Map.getTileWidth() + m_Map.getScrollX();
+				sY = m_SO[i].getTileY() * m_Map.getTileHeight() + m_Map.getScrollY() - 16;
 				// Only draw visible stationary objects...
-				if(detectCollisionRectangle(sX, sY, sX+m_Map.getTileWidth(), sY+m_Map.getTileHeight(), 0, 0, getWindow()->getWidth() - m_Map.getRightEdge(), getWindow()->getHeight() - m_Map.getBottomEdge()))
+				if(detectCollisionRectangle(sX, sY, sX + m_Map.getTileWidth(), sY + m_Map.getTileHeight(), 0, 0, getWindow()->getWidth() - m_Map.getRightEdge(), getWindow()->getHeight() - m_Map.getBottomEdge()))
 				{
-					getWindow()->drawSprite(m_StationaryObject, 0, 0, sX, sY, m_Map.getTileWidth(), m_Map.getTileHeight()+16);
+					getWindow()->drawSprite(m_StationaryObject, 0, 0, sX, sY, m_Map.getTileWidth(), m_Map.getTileHeight() + 16);
 				}
 			}
 		}
@@ -193,14 +188,14 @@ void MGFWrapper::draw()
 		// Draw marking frame if marking is ongoing
 		if(isFramingOngoing())
 		{
-			int uLX=std::min(getFrameStartX(), getFrameEndX());
-			int uLY=std::min(getFrameStartY(), getFrameEndY());
-			int xL=abs(getFrameStartX() - getFrameEndX());
-			int yL=abs(getFrameStartY() - getFrameEndY());
+			int uLX = std::min(getFrameStartX(), getFrameEndX());
+			int uLY = std::min(getFrameStartY(), getFrameEndY());
+			int xL = abs(getFrameStartX() - getFrameEndX());
+			int yL = abs(getFrameStartY() - getFrameEndY());
 			getWindow()->hLine32(uLX, uLY, xL, 0x00FF0000);
-			getWindow()->hLine32(uLX, uLY+yL, xL, 0x00FF0000);
+			getWindow()->hLine32(uLX, uLY + yL, xL, 0x00FF0000);
 			getWindow()->vLine32(uLX, uLY, yL, 0x00FF0000);
-			getWindow()->vLine32(uLX+xL, uLY, yL, 0x00FF0000);
+			getWindow()->vLine32(uLX + xL, uLY, yL, 0x00FF0000);
 		}
 	}
 

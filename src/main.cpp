@@ -5,26 +5,26 @@ using std::string;
 
 int main(int argc, char **argv)
 {
-	MGFWrapper* mgfw = 0;
+	MGFWrapper *mgfw = 0;
 	MGWindow window;
 
 	bool loggingOn = false;
 	bool scriptFile = false;
 	char scriptFileName[256] = "";
 
-	if(argc==1)
+	if(argc == 1)
 	{
 		// No parameters were given
 	}
 	else
 	{
-		for(int i=1; i<argc; i++)
+		for(int i = 1; i < argc; i++)
 		{
-			if(strcmp(argv[i], "-logging")==0)
+			if(strcmp(argv[i], "-logging") == 0)
 			{
 				loggingOn = true;
 			}
-			else if(strcmp(argv[i], "-script")==0)
+			else if(strcmp(argv[i], "-script") == 0)
 			{
 				if(i + 1 == argc)
 				{
@@ -45,14 +45,12 @@ int main(int argc, char **argv)
 		}
 	}
 
-
 	// Create and initialize the framework...
-
 
 	mgfw = new MGFWrapper();
 	mgfw->setWindowProperties(MGWindow_RES_1024_768, 32, false, 
 							  string("BotWars v0.1 based on MGF ") + 
-							  string(mgfw->getMGFrameworkVersion()),
+								string(mgfw->getMGFrameworkVersion()),
 							  &window);
 
 	if(loggingOn) mgfw->enableLogging();
@@ -82,15 +80,6 @@ int main(int argc, char **argv)
 	}
 
 EXIT_MAIN_RIGHT_AWAY:
-
-	if(mgfw)
-	{
-		delete mgfw;
-	}
-	else
-	{
-		return 1;
-	}
-
+	delete mgfw;
 	return 0;
 }
