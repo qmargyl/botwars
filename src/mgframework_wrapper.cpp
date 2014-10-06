@@ -120,26 +120,26 @@ void MGFWrapper::draw()
 		int oX,oY;
 		for(std::list<MGMovingObject>::iterator it = m_MO.begin(); it != m_MO.end(); it++)
 		{
-			oX = (*it).getTileX() * m_Map.getTileWidth() + m_Map.getScrollX() + (*it).getXOffset();
-			oY = (*it).getTileY() * m_Map.getTileHeight() + m_Map.getScrollY() + (*it).getYOffset();
+			oX = it->getTileX() * m_Map.getTileWidth() + m_Map.getScrollX() + it->getXOffset();
+			oY = it->getTileY() * m_Map.getTileHeight() + m_Map.getScrollY() + it->getYOffset();
 			// Only draw visible moving objects...
 			if(detectCollisionRectangle(oX, oY, oX + m_Map.getTileWidth(), oY + m_Map.getTileHeight(), 0, 0, getWindow()->getWidth(), getWindow()->getHeight()))
 			{
 				drawTile(m_MOSprite[it->getOwner()], 0, 0, oX, oY);
-				if(isSelectiveTileRenderingActive())
+				if(!it->isIdle() && isSelectiveTileRenderingActive())
 				{
-					m_Map.markForRendering((*it).getTileX(), (*it).getTileY());
-					m_Map.markForRendering((*it).getTileX() + 1, (*it).getTileY() + 1);
-					m_Map.markForRendering((*it).getTileX() - 1, (*it).getTileY() - 1);
-					m_Map.markForRendering((*it).getTileX() + 1, (*it).getTileY() - 1);
-					m_Map.markForRendering((*it).getTileX() - 1, (*it).getTileY() + 1);
-					m_Map.markForRendering((*it).getTileX() + 1, (*it).getTileY());
-					m_Map.markForRendering((*it).getTileX() - 1, (*it).getTileY());
-					m_Map.markForRendering((*it).getTileX(), (*it).getTileY() + 1);
-					m_Map.markForRendering((*it).getTileX(), (*it).getTileY() - 1);
+					m_Map.markForRendering(it->getTileX(), it->getTileY());
+					m_Map.markForRendering(it->getTileX() + 1, it->getTileY() + 1);
+					m_Map.markForRendering(it->getTileX() - 1, it->getTileY() - 1);
+					m_Map.markForRendering(it->getTileX() + 1, it->getTileY() - 1);
+					m_Map.markForRendering(it->getTileX() - 1, it->getTileY() + 1);
+					m_Map.markForRendering(it->getTileX() + 1, it->getTileY());
+					m_Map.markForRendering(it->getTileX() - 1, it->getTileY());
+					m_Map.markForRendering(it->getTileX(), it->getTileY() + 1);
+					m_Map.markForRendering(it->getTileX(), it->getTileY() - 1);
 				}
 
-				if((*it).isMarked())
+				if(it->isMarked())
 				{
 					drawTile(m_Mark, 0, 0, oX, oY);
 				}
