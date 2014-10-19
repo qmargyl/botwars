@@ -48,9 +48,9 @@ bool MGFWrapper::init(int w, int h, int tw, int th)
 		m_Map.setRightEdge(0);
 
 		// Setup application specific game logics..
-		disableFeatureSelectiveTileRendering();
+		enableFeatureSelectiveTileRendering();
 		disableFeatureOnlySelectOwnedMO();
-		enableFeatureMouseScrolling();
+		disableFeatureMouseScrolling();
 		disableFeatureCenterOnMO();
 
 		runConsoleCommand("setfps 60", this, NULL);			// Set initial FPS to 60 to avoid slow start
@@ -83,9 +83,9 @@ void MGFWrapper::draw()
 	if(!noRenderingNeeded)
 	{
 		// Draw all tiles visible in the window...
-		for (int x=0; x < m_Map.getWidth(); x++)
+		for(int x = 0; x < m_Map.getWidth(); x++)
 		{
-			for ( int y=0; y < m_Map.getHeight(); y++)
+			for(int y = 0; y < m_Map.getHeight(); y++)
 			{
 				// Only draw the tiles actually visible (+1 to draw partly visible tiles) in the window...
 				if(  ((x * m_Map.getTileWidth() + m_Map.getScrollX()) <= getWindow()->getWidth() + m_Map.getTileWidth() - m_Map.getRightEdge()) &&
@@ -107,26 +107,26 @@ void MGFWrapper::draw()
 		int oX,oY;
 		for(std::list<MGMovingObject>::iterator it = m_MO.begin(); it != m_MO.end(); it++)
 		{
-			oX = (*it).getTileX() * m_Map.getTileWidth() + m_Map.getScrollX() + (*it).getXOffset();
-			oY = (*it).getTileY() * m_Map.getTileHeight() + m_Map.getScrollY() + (*it).getYOffset();
+			oX = it->getTileX() * m_Map.getTileWidth() + m_Map.getScrollX() + it->getXOffset();
+			oY = it->getTileY() * m_Map.getTileHeight() + m_Map.getScrollY() + it->getYOffset();
 			// Only draw visible moving objects...
 			if(detectCollisionRectangle(oX, oY, oX + m_Map.getTileWidth(), oY + m_Map.getTileHeight(), 0, 0, getWindow()->getWidth(), getWindow()->getHeight()))
 			{
 				drawTile(m_MOSprite[it->getOwner()], 0, 0, oX, oY);
 				if(isSelectiveTileRenderingActive())
 				{
-					m_Map.markForRendering((*it).getTileX(), (*it).getTileY());
-					m_Map.markForRendering((*it).getTileX() + 1, (*it).getTileY() + 1);
-					m_Map.markForRendering((*it).getTileX() - 1, (*it).getTileY() - 1);
-					m_Map.markForRendering((*it).getTileX() + 1, (*it).getTileY() - 1);
-					m_Map.markForRendering((*it).getTileX() - 1, (*it).getTileY() + 1);
-					m_Map.markForRendering((*it).getTileX() + 1, (*it).getTileY());
-					m_Map.markForRendering((*it).getTileX() - 1, (*it).getTileY());
-					m_Map.markForRendering((*it).getTileX(), (*it).getTileY() + 1);
-					m_Map.markForRendering((*it).getTileX(), (*it).getTileY() - 1);
+					m_Map.markForRendering(it->getTileX(), it->getTileY());
+					m_Map.markForRendering(it->getTileX() + 1, it->getTileY() + 1);
+					m_Map.markForRendering(it->getTileX() - 1, it->getTileY() - 1);
+					m_Map.markForRendering(it->getTileX() + 1, it->getTileY() - 1);
+					m_Map.markForRendering(it->getTileX() - 1, it->getTileY() + 1);
+					m_Map.markForRendering(it->getTileX() + 1, it->getTileY());
+					m_Map.markForRendering(it->getTileX() - 1, it->getTileY());
+					m_Map.markForRendering(it->getTileX(), it->getTileY() + 1);
+					m_Map.markForRendering(it->getTileX(), it->getTileY() - 1);
 				}
 
-				if((*it).isMarked())
+				if(it->isMarked())
 				{
 					drawTile(m_Mark, 0, 0, oX, oY);
 				}
@@ -139,12 +139,12 @@ void MGFWrapper::draw()
 		{
 			if(m_SO != NULL)
 			{
-				sX=m_SO[i].getTileX() * m_Map.getTileWidth() + m_Map.getScrollX();
-				sY=m_SO[i].getTileY() * m_Map.getTileHeight() + m_Map.getScrollY()-16;
+				sX = m_SO[i].getTileX() * m_Map.getTileWidth() + m_Map.getScrollX();
+				sY = m_SO[i].getTileY() * m_Map.getTileHeight() + m_Map.getScrollY() - 16;
 				// Only draw visible stationary objects...
 				if(detectCollisionRectangle(sX, sY, sX+m_Map.getTileWidth(), sY+m_Map.getTileHeight(), 0, 0, getWindow()->getWidth() - m_Map.getRightEdge(), getWindow()->getHeight() - m_Map.getBottomEdge()))
 				{
-					drawTile(m_StationaryObject, 0, 0, sX, sY, m_Map.getTileWidth(), m_Map.getTileHeight()+16);
+					drawTile(m_StationaryObject, 0, 0, sX, sY, m_Map.getTileWidth(), m_Map.getTileHeight() + 16);
 				}
 			}
 		}
