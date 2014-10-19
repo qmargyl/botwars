@@ -12,12 +12,12 @@ class MGFWrapper : public MGFramework
 		virtual void draw();
 
 		// Graphics (which is not part of the framework) should be added here.
-		SDL_Surface *m_Floor;
+		SDL_Texture *m_Floor;
 
-		SDL_Surface *m_MOSprite[9];
+		SDL_Texture *m_MOSprite[9];
 
-		SDL_Surface *m_StationaryObject;
-		SDL_Surface *m_Mark;
+		SDL_Texture *m_StationaryObject;
+		SDL_Texture *m_Mark;
 
 	public:
 		MGFWrapper();

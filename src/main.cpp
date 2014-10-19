@@ -83,14 +83,6 @@ int main(int argc, char **argv)
 
 EXIT_MAIN_RIGHT_AWAY:
 
-	if(mgfw)
-	{
-		delete mgfw;
-	}
-	else
-	{
-		return 1;
-	}
-
+	delete mgfw;
 	return 0;
 }
