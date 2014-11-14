@@ -23,20 +23,15 @@ bool MGFWrapper::init(int w, int h, int tw, int th)
 		}
 
 		// All graphics should be loaded here.
-		m_Floor = static_cast<SDL_Texture*>(getWindow()->loadBMPImage("tileset.bmp", false));
 
-		m_MOSprite[0] = static_cast<SDL_Texture*>(getWindow()->loadBMPImage("movingobject_00.bmp", true));
-		m_MOSprite[1] = static_cast<SDL_Texture*>(getWindow()->loadBMPImage("movingobject_01.bmp", true));
-		m_MOSprite[2] = static_cast<SDL_Texture*>(getWindow()->loadBMPImage("movingobject_02.bmp", true));
-		m_MOSprite[3] = static_cast<SDL_Texture*>(getWindow()->loadBMPImage("movingobject_03.bmp", true));
-		m_MOSprite[4] = static_cast<SDL_Texture*>(getWindow()->loadBMPImage("movingobject_04.bmp", true));
-		m_MOSprite[5] = static_cast<SDL_Texture*>(getWindow()->loadBMPImage("movingobject_05.bmp", true));
-		m_MOSprite[6] = static_cast<SDL_Texture*>(getWindow()->loadBMPImage("movingobject_06.bmp", true));
-		m_MOSprite[7] = static_cast<SDL_Texture*>(getWindow()->loadBMPImage("movingobject_07.bmp", true));
-		m_MOSprite[8] = static_cast<SDL_Texture*>(getWindow()->loadBMPImage("movingobject_08.bmp", true));
-
-		m_StationaryObject = static_cast<SDL_Texture*>(getWindow()->loadBMPImage("stationaryobject.bmp", true));
-		m_Mark = static_cast<SDL_Texture*>(getWindow()->loadBMPImage("mark.bmp", true));
+		for(unsigned int i = 0; i < NO_OF_TEXTURES; i++) textures.push_back(MGTexHandle());
+		getWindow()->loadBMPImage("tileset.bmp", textures[TEX_GRASS], false);
+		getWindow()->loadBMPImage("movingobject_00.bmp", textures[TEX_MO_0], true);
+		getWindow()->loadBMPImage("movingobject_01.bmp", textures[TEX_MO_1], true);
+		getWindow()->loadBMPImage("tree.bmp", textures[TEX_TREE], true);
+		getWindow()->loadBMPImage("tree2.bmp", textures[TEX_TREE2], true);
+		getWindow()->loadBMPImage("tree3.bmp", textures[TEX_TREE3], true);
+		getWindow()->loadBMPImage("mark.bmp", textures[TEX_REDFRAME], true);
 
 		// Objcts such as the map are initialized here.
 		m_Map.init(w, h, tw, th, getWindow()->getWidth(), getWindow()->getHeight()); // width (in number of tiles), height, tile width (in pixels), tile height, resolution x and y.
@@ -50,18 +45,29 @@ bool MGFWrapper::init(int w, int h, int tw, int th)
 		// Setup application specific game logics..
 		enableFeatureSelectiveTileRendering();
 		disableFeatureOnlySelectOwnedMO();
-		disableFeatureMouseScrolling();
+		enableFeatureMouseScrolling();
 		disableFeatureCenterOnMO();
+		enableFeatureMiniMap();
 
 		runConsoleCommand("setfps 60", this, NULL);			// Set initial FPS to 60 to avoid slow start
 		runConsoleCommand("logging off", this, NULL);		// Turn on logging for the MGFramework class
 		runConsoleCommand("map logging off", this, NULL);	// Turn on logging for the MGMap class
-		runConsoleCommand("minimap off", this, NULL);
-		
-		runConsoleCommand("add mo 20 -owner 1 -area_square 5 5 20 20", this, NULL);
-		runConsoleCommand("add mo 20 -owner 2 -area_square 30 30 45 45", this, NULL);
 
-		runConsoleCommand("add so 50", this, NULL);
+		runConsoleCommand("add so 300 -type 17", this, NULL);
+		increaseDensityOfStationaryObjects(17, 2);
+		increaseDensityOfStationaryObjects(17, 2);
+		fillInStationaryObjectClusters(17);
+
+		std::vector<MGTexHandle*> tHVec;
+		tHVec.push_back(&textures[TEX_TREE]);
+		tHVec.push_back(&textures[TEX_TREE2]);
+		tHVec.push_back(&textures[TEX_TREE3]);
+		setStationaryObjectTexHandles(17, tHVec);
+
+		runConsoleCommand("add mo 20 -owner 0 -area_square 5 5 20 20", this, NULL);
+		runConsoleCommand("add mo 20 -owner 1 -area_square 30 30 45 45", this, NULL);
+
+//		runConsoleCommand("add so 50", this, NULL);
 
 		return true;
 	}
@@ -83,28 +89,28 @@ void MGFWrapper::draw()
 	if(!noRenderingNeeded)
 	{
 		// Draw all tiles visible in the window...
+		int tX, tY;
 		for(int x = 0; x < m_Map.getWidth(); x++)
 		{
+			tX = x * m_Map.getTileWidth() + m_Map.getScrollX();
 			for(int y = 0; y < m_Map.getHeight(); y++)
 			{
 				// Only draw the tiles actually visible (+1 to draw partly visible tiles) in the window...
-				if(  ((x * m_Map.getTileWidth() + m_Map.getScrollX()) <= getWindow()->getWidth() + m_Map.getTileWidth() - m_Map.getRightEdge()) &&
-					 ((x * m_Map.getTileWidth() + m_Map.getScrollX()) >= 0 - m_Map.getTileWidth()) &&
-					 ((y * m_Map.getTileHeight() + m_Map.getScrollY()) <= getWindow()->getHeight() + m_Map.getTileHeight() - m_Map.getBottomEdge()) &&
-					 ((y * m_Map.getTileHeight() + m_Map.getScrollY()) >= 0 - m_Map.getTileHeight()) &&
+				tY = y * m_Map.getTileHeight() + m_Map.getScrollY();
+				if(  (tX <= getWindow()->getWidth() + m_Map.getTileWidth()) &&
+					 (tX >= 0 - m_Map.getTileWidth()) &&
+					 (tY <= getWindow()->getHeight() + m_Map.getTileHeight()) &&
+					 (tY >= 0 - m_Map.getTileHeight()) &&
 					 (!isSelectiveTileRenderingActive() || renderAllTiles() || m_Map.isMarkedForRendering(x, y)) )
 				{
-					if(m_Map.getTileProperty(x, y) & MGMAP_TP_PROPERTY_1)
-					{
-						drawTile(m_Floor, 0, 0, x * m_Map.getTileWidth() + m_Map.getScrollX(), y * m_Map.getTileHeight() + m_Map.getScrollY(), m_Map.getTileWidth(), m_Map.getTileHeight());
-					}
+					getWindow()->drawSprite(textures[TEX_GRASS], 0, 0, tX, tY, m_Map.getTileWidth(), m_Map.getTileHeight());
 					m_Map.unmarkForRendering(x, y);
 				}
 			}
 		}
 
 		// Draw all moving objects...
-		int oX,oY;
+		int oX, oY;
 		for(std::list<MGMovingObject>::iterator it = m_MO.begin(); it != m_MO.end(); it++)
 		{
 			oX = it->getTileX() * m_Map.getTileWidth() + m_Map.getScrollX() + it->getXOffset();
@@ -112,8 +118,8 @@ void MGFWrapper::draw()
 			// Only draw visible moving objects...
 			if(detectCollisionRectangle(oX, oY, oX + m_Map.getTileWidth(), oY + m_Map.getTileHeight(), 0, 0, getWindow()->getWidth(), getWindow()->getHeight()))
 			{
-				drawTile(m_MOSprite[it->getOwner()], 0, 0, oX, oY);
-				if(isSelectiveTileRenderingActive())
+				getWindow()->drawSprite(textures[TEX_MO_0 + it->getOwner()], 0, 0, oX, oY, m_Map.getTileWidth(), m_Map.getTileHeight());
+				if(!it->isIdle() && isSelectiveTileRenderingActive())
 				{
 					m_Map.markForRendering(it->getTileX(), it->getTileY());
 					m_Map.markForRendering(it->getTileX() + 1, it->getTileY() + 1);
@@ -128,37 +134,30 @@ void MGFWrapper::draw()
 
 				if(it->isMarked())
 				{
-					drawTile(m_Mark, 0, 0, oX, oY);
+					getWindow()->drawSprite(textures[TEX_REDFRAME], 0, 0, oX, oY, m_Map.getTileWidth(), m_Map.getTileHeight());
 				}
 			}
 		}
 
 		// Draw all stationary objects...
-		int sX, sY;
-		for(int i = 0; i < getNumberOfSO(); i++)
-		{
-			if(m_SO != NULL)
-			{
-				sX = m_SO[i].getTileX() * m_Map.getTileWidth() + m_Map.getScrollX();
-				sY = m_SO[i].getTileY() * m_Map.getTileHeight() + m_Map.getScrollY() - 16;
-				// Only draw visible stationary objects...
-				if(detectCollisionRectangle(sX, sY, sX+m_Map.getTileWidth(), sY+m_Map.getTileHeight(), 0, 0, getWindow()->getWidth() - m_Map.getRightEdge(), getWindow()->getHeight() - m_Map.getBottomEdge()))
-				{
-					drawTile(m_StationaryObject, 0, 0, sX, sY, m_Map.getTileWidth(), m_Map.getTileHeight() + 16);
-				}
-			}
-		}
+		drawAllSOWithTexHandles();
+
+		// Draw a frame around the edge of the map
+		getWindow()->drawRectangleRGB(m_Map.getLeftEdge(), m_Map.getTopEdge(), m_Map.getWindowWidth() - m_Map.getLeftEdge() - m_Map.getRightEdge(), m_Map.getWindowHeight() - m_Map.getBottomEdge() - m_Map.getTopEdge(),  0x00, 0x00, 0xFF);
+
+		// Draw the mini map if enabled. Also draw all objects on it...
+		drawBasicMiniMap(16, 16);
 	}
 
-	// Example of how text can be printed on the surface.. Here FPS and time left between frames.
+	// Example of how text can be printed on screen.. Here FPS and time left between frames.
 	getWindow()->drawText((std::string("MOs: ") + MGFramework::toString((int)getNumberOfMO()) + 
-		std::string("(") + MGFramework::toString((int)MGMovingObject::nMovingMO()) + std::string(")") + std::string("          ")).c_str(), 
+		std::string("(") + MGFramework::toString((int)MGMovingObject::nMovingMO()) + std::string(")") + std::string("      ")).c_str(), 
 			 16, getWindow()->getWidth() - m_Map.getWidth() - 16, m_Map.getHeight() + 30, 0, 0, 0, 0, 255, 0);
-	getWindow()->drawText((std::string("FD : ") + MGFramework::toString((int)getLastFrameDelayTime()) + std::string("          ")).c_str(), 
+	getWindow()->drawText((std::string("FD : ") + MGFramework::toString((int)getLastFrameDelayTime()) + std::string("      ")).c_str(), 
 			 16, getWindow()->getWidth() - m_Map.getWidth() - 16, m_Map.getHeight() + 50, 0, 0, 0, 0, 255, 0);
-	getWindow()->drawText((std::string("FPS: ") + MGFramework::toString((int)getFPS()) + std::string("          ")).c_str(), 
+	getWindow()->drawText((std::string("FPS: ") + MGFramework::toString((int)getFPS()) + std::string("      ")).c_str(), 
 			 16, getWindow()->getWidth() - m_Map.getWidth() - 16, m_Map.getHeight() + 70, 0, 0, 0, 0, 255, 0);
-	getWindow()->drawText((std::string("DT: ") + MGFramework::toString(getDrawnTilesCounter()) + std::string("          ")).c_str(), 
+	getWindow()->drawText((std::string("DT: ") + MGFramework::toString(getWindow()->getDrawnSpritesCounter()) + std::string("      ")).c_str(), 
 			 16, getWindow()->getWidth() - m_Map.getWidth() - 16, m_Map.getHeight() + 90, 0, 0, 0, 0, 255, 0);
 
 

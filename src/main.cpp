@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 	if(mgfw->windowPropertiesSet())
 	{
 		// If initialization is ok, run the framework...
-		if(mgfw->init(64, 48, 16, 16))
+		if(mgfw->init(64, 48, 32, 32))
 		{
 			if(scriptFile)
 			{
@@ -71,14 +71,6 @@ int main(int argc, char **argv)
 				mgfw->run(NULL);
 			}
 		}
-		else
-		{
-
-		}
-	}
-	else 
-	{
-
 	}
 
 EXIT_MAIN_RIGHT_AWAY:

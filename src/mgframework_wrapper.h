@@ -12,12 +12,19 @@ class MGFWrapper : public MGFramework
 		virtual void draw();
 
 		// Graphics (which is not part of the framework) should be added here.
-		SDL_Texture *m_Floor;
+		enum
+		{
+			TEX_GRASS = 0,
+			TEX_MO_0,
+			TEX_MO_1,
+			TEX_TREE,
+			TEX_TREE2,
+			TEX_TREE3,
+			TEX_REDFRAME,
+			NO_OF_TEXTURES
+		} TextureIndex;
 
-		SDL_Texture *m_MOSprite[9];
-
-		SDL_Texture *m_StationaryObject;
-		SDL_Texture *m_Mark;
+		std::vector<MGTexHandle> textures;
 
 	public:
 		MGFWrapper();
